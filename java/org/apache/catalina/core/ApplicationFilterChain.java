@@ -146,6 +146,7 @@ public final class ApplicationFilterChain implements FilterChain {
                         @Override
                         public Void run()
                             throws ServletException, IOException {
+                            //内部处理
                             internalDoFilter(req,res);
                             return null;
                         }
@@ -228,6 +229,7 @@ public final class ApplicationFilterChain implements FilterChain {
                                            args,
                                            principal);
             } else {
+                //映射的servlet处理请求
                 servlet.service(request, response);
             }
         } catch (IOException | ServletException | RuntimeException e) {

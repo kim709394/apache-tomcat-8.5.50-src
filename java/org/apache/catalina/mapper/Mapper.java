@@ -695,6 +695,7 @@ public final class Mapper {
         }
         host.toChars();
         uri.toChars();
+        //内部映射
         internalMap(host.getCharChunk(), uri.getCharChunk(), version,
                 mappingData);
     }
@@ -741,6 +742,7 @@ public final class Mapper {
         }
 
         // Virtual host mapping
+        //获取映射虚拟机host
         MappedHost[] hosts = this.hosts;
         MappedHost mappedHost = exactFindIgnoreCase(hosts, host);
         if (mappedHost == null) {
@@ -774,6 +776,7 @@ public final class Mapper {
         uri.setLimit(-1);
 
         // Context mapping
+        //通过映射到的host获取映射的上下文context
         ContextList contextList = mappedHost.contextList;
         MappedContext[] contexts = contextList.contexts;
         int pos = find(contexts, uri);
@@ -844,6 +847,7 @@ public final class Mapper {
 
         // Wrapper mapping
         if (!contextVersion.isPaused()) {
+            //映射包装进一步处理
             internalMapWrapper(contextVersion, uri, mappingData);
         }
 
@@ -869,12 +873,12 @@ public final class Mapper {
         }
         int servletPath = pathOffset + length;
         path.setOffset(servletPath);
-
-        // Rule 1 -- Exact Match
+        //处理各种请求
+        // Rule 1 -- Exact Match    精准匹配
         MappedWrapper[] exactWrappers = contextVersion.exactWrappers;
         internalMapExactWrapper(exactWrappers, path, mappingData);
 
-        // Rule 2 -- Prefix Match
+        // Rule 2 -- Prefix Match   前缀匹配
         boolean checkJspWelcomeFiles = false;
         MappedWrapper[] wildcardWrappers = contextVersion.wildcardWrappers;
         if (mappingData.wrapper == null) {
@@ -913,14 +917,14 @@ public final class Mapper {
             return;
         }
 
-        // Rule 3 -- Extension Match
+        // Rule 3 -- Extension Match    扩展匹配
         MappedWrapper[] extensionWrappers = contextVersion.extensionWrappers;
         if (mappingData.wrapper == null && !checkJspWelcomeFiles) {
             internalMapExtensionWrapper(extensionWrappers, path, mappingData,
                     true);
         }
 
-        // Rule 4 -- Welcome resources processing for servlets
+        // Rule 4 -- Welcome resources processing for servlets  处理servlet资源
         if (mappingData.wrapper == null) {
             boolean checkWelcomeFiles = checkJspWelcomeFiles;
             if (!checkWelcomeFiles) {

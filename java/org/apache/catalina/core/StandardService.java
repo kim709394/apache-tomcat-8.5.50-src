@@ -417,21 +417,23 @@ public class StandardService extends LifecycleMBeanBase implements Service {
         setState(LifecycleState.STARTING);
 
         // Start our defined Container first
+        //启动engine
         if (engine != null) {
             synchronized (engine) {
                 engine.start();
             }
         }
-
+        //启动所有线程池
         synchronized (executors) {
             for (Executor executor: executors) {
                 executor.start();
             }
         }
-
+        //启动所有监听器
         mapperListener.start();
 
         // Start our defined Connectors second
+        //启动所有连接器
         synchronized (connectorsLock) {
             for (Connector connector: connectors) {
                 try {
@@ -531,10 +533,12 @@ public class StandardService extends LifecycleMBeanBase implements Service {
         super.initInternal();
 
         if (engine != null) {
+            //初始化engine
             engine.init();
         }
 
         // Initialize any Executors
+        //调用所有executor的init方法
         for (Executor executor : findExecutors()) {
             if (executor instanceof JmxEnabled) {
                 ((JmxEnabled) executor).setDomain(getDomain());
@@ -543,9 +547,11 @@ public class StandardService extends LifecycleMBeanBase implements Service {
         }
 
         // Initialize mapper listener
+        //映射的监听器初始化
         mapperListener.init();
 
         // Initialize our defined Connectors
+        //初始化所有connector
         synchronized (connectorsLock) {
             for (Connector connector : connectors) {
                 try {

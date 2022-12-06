@@ -250,6 +250,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
     /**
      * Start the NIO endpoint, creating acceptor, poller threads.
+     * servlet请求流程入口
      */
     @Override
     public void startInternal() throws Exception {
@@ -273,6 +274,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             initializeConnectionLatch();
 
             // Start poller threads
+            //nio poller线程run方法开始执行
             pollers = new Poller[getPollerThreadCount()];
             for (int i=0; i<pollers.length; i++) {
                 pollers[i] = new Poller();
@@ -859,6 +861,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         iterator.remove();
                     } else {
                         iterator.remove();
+                        //判断nio读写执行
                         processKey(sk, attachment);
                     }
                 }//while
@@ -883,11 +886,13 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                             boolean closeSocket = false;
                             // Read goes before write
                             if (sk.isReadable()) {
+                                //读执行
                                 if (!processSocket(attachment, SocketEvent.OPEN_READ, true)) {
                                     closeSocket = true;
                                 }
                             }
                             if (!closeSocket && sk.isWritable()) {
+                                //写执行
                                 if (!processSocket(attachment, SocketEvent.OPEN_WRITE, true)) {
                                     closeSocket = true;
                                 }
@@ -1579,10 +1584,13 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
         @Override
         protected void doRun() {
+            //获取nio通道
             NioChannel socket = socketWrapper.getSocket();
+            //获取nio选择器key
             SelectionKey key = socket.getIOChannel().keyFor(socket.getPoller().getSelector());
 
             try {
+                //处理tcp协议握手状态
                 int handshake = -1;
 
                 try {
@@ -1617,7 +1625,9 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 if (handshake == 0) {
                     SocketState state = SocketState.OPEN;
                     // Process the request from this socket
+                    //套接字处理请求
                     if (event == null) {
+                        //读取操作
                         state = getHandler().process(socketWrapper, SocketEvent.OPEN_READ);
                     } else {
                         state = getHandler().process(socketWrapper, event);

@@ -124,7 +124,7 @@ public abstract class LifecycleBase implements Lifecycle {
         }
     }
 
-
+    //容器生命周期init阶段：模板方法模式，
     @Override
     public final synchronized void init() throws LifecycleException {
         if (!state.equals(LifecycleState.NEW)) {
@@ -132,7 +132,14 @@ public abstract class LifecycleBase implements Lifecycle {
         }
 
         try {
+            //设置生命周期状态
             setStateInternal(LifecycleState.INITIALIZING, null, false);
+            /**
+             * 这里调用容器自身的init方法
+             *包含Server(StandardServer)、Service(StandardService)、Executor(StandardThreadExecutor)、
+             * Engine(StandardEngine)、Host(StandardHost)、Context(StandardContext)
+             * Connector
+             */
             initInternal();
             setStateInternal(LifecycleState.INITIALIZED, null, false);
         } catch (Throwable t) {
@@ -152,6 +159,8 @@ public abstract class LifecycleBase implements Lifecycle {
 
     /**
      * {@inheritDoc}
+     * 容器生命周期start阶段
+     * startInternal();各容器自己的start方法：
      */
     @Override
     public final synchronized void start() throws LifecycleException {
@@ -180,6 +189,11 @@ public abstract class LifecycleBase implements Lifecycle {
 
         try {
             setStateInternal(LifecycleState.STARTING_PREP, null, false);
+            /**
+             * 所有容器的启动阶段调用方法：
+             * Server(StandardServer)、Service(StandardService)、Engine(StandardEngine)
+             * Executor(StandardThreadExecutor)、Engine(StandardEngine)、Connector
+             */
             startInternal();
             if (state.equals(LifecycleState.FAILED)) {
                 // This is a 'controlled' failure. The component put itself into the

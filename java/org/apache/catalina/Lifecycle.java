@@ -210,6 +210,7 @@ public interface Lifecycle {
      *
      * @exception LifecycleException if this component detects a fatal error
      *  that prevents this component from being used
+     *  LifecycleBase
      */
     public void init() throws LifecycleException;
 

@@ -46,10 +46,11 @@ public abstract class SocketProcessorBase<S> implements Runnable {
             if (socketWrapper.isClosed()) {
                 return;
             }
+            //请求执行
             doRun();
         }
     }
 
-
+    //NioEndpoint
     protected abstract void doRun();
 }

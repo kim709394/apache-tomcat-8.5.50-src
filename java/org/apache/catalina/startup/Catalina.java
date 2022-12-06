@@ -536,13 +536,18 @@ public class Catalina {
         loaded = true;
 
         long t1 = System.nanoTime();
-
+        //初始化目录
         initDirs();
 
         // Before digester - it may be needed
+        //初始化naming
         initNaming();
 
         // Create and execute our Digester
+        /**
+         * 加载conf/server.xml文件，将标签信息加载进内存，
+         * 并将标签定义的容器和组件加载进来catalina上下文
+         */
         Digester digester = createStartDigester();
 
         InputSource inputSource = null;
@@ -626,7 +631,7 @@ public class Catalina {
                 }
             }
         }
-
+        //设置server的一些属性
         getServer().setCatalina(this);
         getServer().setCatalinaHome(Bootstrap.getCatalinaHomeFile());
         getServer().setCatalinaBase(Bootstrap.getCatalinaBaseFile());
@@ -636,6 +641,7 @@ public class Catalina {
 
         // Start the new server
         try {
+            //server容器初始化,实际为StandardServer对象，继承容器生命周期接口父类LifecycleBase，
             getServer().init();
         } catch (LifecycleException e) {
             if (Boolean.getBoolean("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE")) {
@@ -685,6 +691,7 @@ public class Catalina {
 
         // Start the new server
         try {
+            //server 启动
             getServer().start();
         } catch (LifecycleException e) {
             log.fatal(sm.getString("catalina.serverStartFail"), e);

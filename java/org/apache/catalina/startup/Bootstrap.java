@@ -248,7 +248,7 @@ public final class Bootstrap {
      * @throws Exception Fatal initialization error
      */
     public void init() throws Exception {
-
+        //初始化类加载器
         initClassLoaders();
 
         Thread.currentThread().setContextClassLoader(catalinaLoader);
@@ -258,6 +258,7 @@ public final class Bootstrap {
         // Load our startup class and call its process() method
         if (log.isDebugEnabled())
             log.debug("Loading startup class");
+        //加载org.apache.catalina.startup.Catalina容器对象，并实例化
         Class<?> startupClass = catalinaLoader.loadClass("org.apache.catalina.startup.Catalina");
         Object startupInstance = startupClass.getConstructor().newInstance();
 
@@ -269,10 +270,11 @@ public final class Bootstrap {
         paramTypes[0] = Class.forName("java.lang.ClassLoader");
         Object paramValues[] = new Object[1];
         paramValues[0] = sharedLoader;
+        //调用Catalina对象的setParentClassLoader方法，设置父类加载器
         Method method =
             startupInstance.getClass().getMethod(methodName, paramTypes);
         method.invoke(startupInstance, paramValues);
-
+        //将Catalina对象设置为Catalina守护容器属性
         catalinaDaemon = startupInstance;
     }
 
@@ -295,6 +297,7 @@ public final class Bootstrap {
             param = new Object[1];
             param[0] = arguments;
         }
+        //调用catalina的load方法
         Method method =
             catalinaDaemon.getClass().getMethod(methodName, paramTypes);
         if (log.isDebugEnabled()) {
@@ -338,7 +341,7 @@ public final class Bootstrap {
         if (catalinaDaemon == null) {
             init();
         }
-
+        //调用catalina的start方法
         Method method = catalinaDaemon.getClass().getMethod("start", (Class [])null);
         method.invoke(catalinaDaemon, (Object [])null);
     }
@@ -430,7 +433,9 @@ public final class Bootstrap {
     /**
      * Main method and entry point when starting Tomcat via the provided
      * scripts.
-     *
+     *  启动流程入口
+     *  webapps部署了web-demo工程；访问地址：http://localhost:8080/web-demo
+     *  servlet请求例子：http://localhost:8080/web-demo/myservlet
      * @param args Command line arguments to be processed
      */
     public static void main(String args[]) {
@@ -440,12 +445,14 @@ public final class Bootstrap {
                 // Don't set daemon until init() has completed
                 Bootstrap bootstrap = new Bootstrap();
                 try {
+                    //初始化引导类
                     bootstrap.init();
                 } catch (Throwable t) {
                     handleThrowable(t);
                     t.printStackTrace();
                     return;
                 }
+                //设置引导类属性
                 daemon = bootstrap;
             } else {
                 // When running as a service the call to stop will be on a new
@@ -456,6 +463,7 @@ public final class Bootstrap {
         }
 
         try {
+            //获取启动参数
             String command = "start";
             if (args.length > 0) {
                 command = args[args.length - 1];
@@ -463,12 +471,18 @@ public final class Bootstrap {
 
             if (command.equals("startd")) {
                 args[args.length - 1] = "start";
+
                 daemon.load(args);
                 daemon.start();
             } else if (command.equals("stopd")) {
                 args[args.length - 1] = "stop";
                 daemon.stop();
             } else if (command.equals("start")) {
+                /**
+                 * 启动流程
+                 * 调用Bootstrap对象的load方法，加载一系列子容器catalina、server、service
+                 * executor、engine、host、context、connector、protocolhandler等
+                 */
                 daemon.setAwait(true);
                 daemon.load(args);
                 daemon.start();

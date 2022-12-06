@@ -718,7 +718,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
             }
 
             S socket = wrapper.getSocket();
-
+            //获得处理器
             Processor processor = connections.get(socket);
             if (getLog().isDebugEnabled()) {
                 getLog().debug(sm.getString("abstractConnectionHandler.connectionsGet",
@@ -807,6 +807,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
 
                 SocketState state = SocketState.CLOSED;
                 do {
+                    //处理请求
                     state = processor.process(wrapper, status);
 
                     if (state == SocketState.UPGRADING) {

@@ -966,7 +966,14 @@ public class Connector extends LifecycleMBeanBase  {
         super.initInternal();
 
         // Initialize adapter
+        //初始化Coyote连接器适配器
         adapter = new CoyoteAdapter(this);
+        /**
+         *当前Connector ⽀持的访问协议。 默认为 HTTP/1.1 ， 并采⽤⾃动切换机制选择
+         * ⼀个基于 JAVA NIO 的链接器或者基于本地APR的链接器（
+         * 根据本地是否含有Tomcat的本地库判定）
+         * 默认是org.apache.coyote.http11.Http11NioProtocol
+         */
         protocolHandler.setAdapter(adapter);
 
         // Make sure parseBodyMethodsSet has a default
@@ -990,6 +997,7 @@ public class Connector extends LifecycleMBeanBase  {
         }
 
         try {
+            //初始化protocolHandler
             protocolHandler.init();
         } catch (Exception e) {
             throw new LifecycleException(
@@ -1015,6 +1023,7 @@ public class Connector extends LifecycleMBeanBase  {
         setState(LifecycleState.STARTING);
 
         try {
+            //启动协议处理器
             protocolHandler.start();
         } catch (Exception e) {
             throw new LifecycleException(
