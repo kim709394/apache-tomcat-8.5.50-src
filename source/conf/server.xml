@@ -204,7 +204,7 @@ Service
     <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
                maxThreads="150" schema="https" secure="true" SSLEnabled="true" >
       <SSLHostConfig>
-        <Certificate certificateKeystoreFile="C:\workspaces\apache-tomcat-8.5.50-src\source\conf\kim.keystore"
+        <Certificate certificateKeystoreFile="conf\kim.keystore"
                      certificateKeystorePassword="123456"
                      type="RSA" />
       </SSLHostConfig>

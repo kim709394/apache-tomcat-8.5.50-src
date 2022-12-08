@@ -192,7 +192,7 @@ public abstract class LifecycleBase implements Lifecycle {
             /**
              * 所有容器的启动阶段调用方法：
              * Server(StandardServer)、Service(StandardService)、Engine(StandardEngine)
-             * Executor(StandardThreadExecutor)、Engine(StandardEngine)、Connector
+             * Executor(StandardThreadExecutor)、Connector
              */
             startInternal();
             if (state.equals(LifecycleState.FAILED)) {
